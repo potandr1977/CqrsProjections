@@ -1,0 +1,8 @@
+fastapi[standard]~=0.115.11
+uvicorn>=0.34.0
+pydantic>=2.7.0,<3.0.0
+sqlalchemy>=2.0.39
+asyncpg>=0.30.0
+mongoengine>=0.29.1
+elasticsearch>=8.17.2
+dependency-injector>=4.46.0

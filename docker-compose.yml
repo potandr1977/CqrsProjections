@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  cqrs_app:
+    container_name: cqrs_app
+    image: potandr1977/cqrs_app
+    ports:
+      - "3003:3003"
+    build:
+      context: .
+      dockerfile: Dockerfile
