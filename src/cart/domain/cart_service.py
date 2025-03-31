@@ -1,10 +1,10 @@
+from src.cart.domain.cart_repository_interface import ICartRepository
 from src.cart.domain.cart_service_interface import ICartService
-from src.cart.infrastructure.cart_repository import CartRepository
 
 
 class CartService(ICartService):
-    def __init__(self, product_repository:CartRepository):
-        self.product_repository = product_repository
+    def __init__(self, cart_repository:ICartRepository):
+        self.cart_repository = cart_repository
 
     def get_rep_name(self):
-        return self.product_repository.get_name()
+        return self.cart_repository.get_name()

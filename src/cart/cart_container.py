@@ -10,8 +10,8 @@ from src.catalog.infrastructure.product_repository import ProductRepository
 
 pg_database='postgresql+asyncpg://app:app@localhost:5432/airbooking_db'
 
-class CatalogContainer(containers.DeclarativeContainer):
+class CartContainer(containers.DeclarativeContainer):
     #engine = create_async_engine(pg_database, echo=True)
     repository:ICartRepository = providers.Factory(CartRepository)
-    service:ICartService = providers.Factory(CartService, repository = repository)
+    service:ICartService = providers.Factory(CartService, cart_repository = repository)
     wiring_config = containers.WiringConfiguration(modules=["cart.cart_endpoints"])

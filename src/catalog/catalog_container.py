@@ -11,5 +11,5 @@ pg_database='postgresql+asyncpg://app:app@localhost:5432/airbooking_db'
 class CatalogContainer(containers.DeclarativeContainer):
     #engine = create_async_engine(pg_database, echo=True)
     repository:IProductRepository = providers.Factory(ProductRepository)
-    service:IProductService = providers.Factory(ProductService, repository = repository)
+    service:IProductService = providers.Factory(ProductService, product_repository = repository)
     wiring_config = containers.WiringConfiguration(modules=["catalog.catalog_endpoints"])

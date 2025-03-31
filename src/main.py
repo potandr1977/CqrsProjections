@@ -2,20 +2,21 @@ import uvicorn
 from fastapi import FastAPI
 
 from catalog.catalog_endpoints import router as catalog_router
-from order.router import router as order_router
-from payment.router import router as payment_router
-from reports.router import router as reports_router
+from cart.cart_endpoints import router as cart_router
+from src.cart.cart_container import CartContainer
 from src.catalog.catalog_container import CatalogContainer
 
 
 def create_app() -> FastAPI:
     catalog_container = CatalogContainer()
+    cart_container = CartContainer()
 
     app = FastAPI()
-    app.container = catalog_container
+    app.catalog_container = catalog_container
+    app.cart_container = cart_container
 
     app.include_router(catalog_router)
-    #app.include_router(order_router)
+    app.include_router(cart_router)
     #app.include_router(payment_router)
     #app.include_router(reports_router)
 
