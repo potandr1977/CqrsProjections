@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from dependency_injector.wiring import inject
 from fastapi import APIRouter, Depends
 
@@ -14,7 +16,7 @@ async def ping():
 
 @router.get("/catalog")
 @inject
-async def catalog(product_service: Annotated[ProductService, Depends(Provide[CatalogContainer.service])]):
+async def catalog(product_service: Annotated[IProductService, Depends(Provide[CatalogContainer.service])]):
     name = product_service.get_rep_name()
     return name
 

@@ -1,11 +1,12 @@
 import queue
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Tuple, Final
 
 from src.catalog.domain.category import Category
 from src.catalog.domain.price import Price
-from src.catalog.domain.product_feature import ProductFeature
 
+PRICE_MAX_SIZE: Final[int] = 10
 
 @dataclass(repr=False)
 class Product:
@@ -13,17 +14,12 @@ class Product:
     name: str
     description: str
     categories: list[Category]
-    price_history: queue.Queue[Price](maxsize=10)
+    base_price_history: queue.Queue[Price](maxsize=PRICE_MAX_SIZE)
 
     @property
-    def get_aсtual_price(self) -> tuple[Price, ...]:
-        res = [Price(datetime(2025,1,2),123), Price(datetime(2025,2,3),144)]
-        return tuple(res)
+    def get_prices(self) -> tuple[Price, ...]:
+        return tuple(self.base_price_history)
 
-    @property
-    def get_features(self) -> tuple[ProductFeature, ...]:
-        res = [Price(datetime(2025, 1, 2), 123), Price(datetime(2025, 2, 3), 144)]
-        return tuple(res)
-
-
+    def add_price(self, price:Price):
+        self.base_price_history.append(price)
 

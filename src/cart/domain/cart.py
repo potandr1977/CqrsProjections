@@ -4,7 +4,7 @@ from src.cart.domain.cart_item import CartItem
 from src.catalog.domain.product import Product
 
 
-@dataclass(repr=False)
+@dataclass
 class Cart:
     id: int
     name: str
@@ -36,15 +36,13 @@ class Cart:
     def remove_item_by_product_id(self, product_id:int)->tuple[CartItem, ...]:
         cart_item = next((ci for ci in self.items if ci.product.id == product_id), None)
         if cart_item is None:
-            raise ValueError(f"Item with product id{product_id} not found. Can't delete cart item by product id.")
-
+            raise ValueError(f"Item with product id {product_id} not found. Can't delete cart item by product id.")
         self.items.remove(cart_item)
-
         return tuple(self.items)
 
     def set_amount_by_product_id(self, product_id:int, new_amount:int):
         cart_item = next((ci for ci in self.items if ci.product.id == product_id), None)
         if cart_item is None:
-            raise ValueError(f"Item with product id{product_id} not found. Can't delete cart item by product id.")
-
+            raise ValueError(f"Item with product id {product_id} not found. Can't set amount by product id.")
         cart_item.amount = new_amount
+        return cart_item

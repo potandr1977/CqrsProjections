@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncEngine
 
+from src.catalog.domain.product_repository_repository import IProductRepository
 
-class ProductRepository:
+
+class ProductRepository(IProductRepository):
     def __init__(self): #, engine: AsyncEngine):
         self.name = "ProductRepName"
 
