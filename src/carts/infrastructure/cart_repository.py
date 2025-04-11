@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from src.cart.domain.cart_repository_interface import ICartRepository
-from src.cart.domain.cart_service_interface import ICartService
+from src.carts.domain.cart_repository_interface import ICartRepository
+from src.carts.domain.cart_service_interface import ICartService
 
 
 class CartRepository(ICartRepository):

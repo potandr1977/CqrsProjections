@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 
-@dataclass
-class Category(frozen=True):
+@dataclass(frozen=True)
+class Category:
     id: int
     parent_category_id: int
-    name: str
+    category_name: str

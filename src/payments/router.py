@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-router = APIRouter(prefix="/payments", tags=["payment"])
+router = APIRouter(prefix="/payments", tags=["payments"])
 
 @router.get(
     '/ping',

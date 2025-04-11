@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.catalog.domain.product import Product
+from src.products.domain.product import Product
 
 
 @dataclass
