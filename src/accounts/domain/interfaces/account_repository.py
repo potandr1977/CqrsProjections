@@ -4,8 +4,8 @@ from src.accounts.domain.models.account import Account
 
 
 class IAccountRepository(ABC):
-    # @abstractmethod
-    # async def get_by_id(self, account_id: str)->Account:...
+    @abstractmethod
+    async def get_by_id(self, account_id: str)->Account:...
     # @abstractmethod
     # async def get_all(self)->list[Account]:...
     @abstractmethod

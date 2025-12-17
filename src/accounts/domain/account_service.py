@@ -10,11 +10,11 @@ class AccountService:
         self.account_repository = account_repository
 
     async def create(self, person_id: str, account_name: str):
-        account_id = str(uuid.uuid4())
-        person = Person(id="p1", name="John Doe")
-        account = Account(id=account_id, person_id=person_id, name=account_name, person=person)
+        account_id = f"Account-{str(uuid.uuid4())}"
+        person = Person(id=person_id, name="John Doe")
+        account = Account(account_id, account_name, person)
         await self.account_repository.create(account)
         return account
 
-    async def get(self, account_id: str)->Account:
+    async def get_by_id(self, account_id: str)->Account:
         return await self.account_repository.get_by_id(account_id)
