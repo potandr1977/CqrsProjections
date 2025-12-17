@@ -1,26 +1,39 @@
+import asyncio
+
 import uvicorn
 from fastapi import FastAPI
 
-from products.catalog_endpoints import router as catalog_router
-from carts.cart_endpoints import router as cart_router
-from src.carts.cart_container import CartContainer
-from src.products.catalog_container import CatalogContainer
+from src.accounts.router import account_router
+from src.accounts.container import AccountContainer
 
+async def ensure_database_exists(container:AccountContainer, db_name: str, collection_name: str):
+    client = container.mongo_client()
+    existing_dbs = await client.list_database_names()
+    if not db_name in existing_dbs:
+        print(f"База данных '{db_name}' не найдена, создаём...")
+        db = client[db_name]
+        await db.create_collection(collection_name)
+        await db[collection_name].insert_one({"init": True})
+        print(f"База данных '{db_name}' создана")
+
+async def init_databases(container: AccountContainer):
+    await ensure_database_exists(container, "person_db", "persons")
+    await ensure_database_exists(container, "account_db", "accounts")
+    await ensure_database_exists(container, "payment_db", "payments")
 
 def create_app() -> FastAPI:
-    catalog_container = CatalogContainer()
-    cart_container = CartContainer()
+    account_container = AccountContainer()
 
-    app = FastAPI()
-    app.catalog_container = catalog_container
-    app.cart_container = cart_container
+    application = FastAPI()
+    application.account_container = account_container
 
-    app.include_router(catalog_router)
-    app.include_router(cart_router)
+    application.include_router(account_router)
     #app.include_router(payment_router)
     #app.include_router(reports_router)
 
-    return app
+    asyncio.run(init_databases(account_container))
+
+    return application
 
 app = create_app()
 

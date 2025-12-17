@@ -2,11 +2,111 @@ version: "3.7"
 
 services:
 
-  cqrs_app:
-    container_name: cqrs_app
-    image: potandr1977/cqrs_app
+#  py_app:
+#    container_name: py_app
+#    image: potandr1977/py_app
+#    ports:
+#      - "3003:3003"
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+
+  zookeeper-py:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "3003:3003"
-    build:
-      context: .
-      dockerfile: Dockerfile
+      - "2181:2181"
+
+  kafka-py:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-py
+    depends_on:
+      - zookeeper-py
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # слушаем на всех интерфейсах
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      # рекламируем себя как localhost:9092 (для приложений на хосте)
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-py:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.4.0
+    container_name: kafka-ui
+    ports:
+      - "8181:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka-py:9092
+
+  py_kafdrop:
+    container_name: py_kafdrop
+    image: obsidiandynamics/kafdrop
+    restart: "no"
+    ports:
+      - "9001:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka-py:9092"
+    networks:
+      - mynetwork
+
+  elasticsearch:
+    image: 'elasticsearch:8.12.0'
+    environment:
+      - 'ELASTIC_PASSWORD=secret'
+      - 'discovery.type=single-node'
+      - 'xpack.security.enabled=false'
+    ports:
+      - '9200'
+      - '9300'
+
+  mongo-py:
+    container_name: mongo-py
+    image: mongo:latest
+    ports:
+      - 27047:27017
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE=order_db
+    networks:
+      - mynetwork
+
+#  pgserver:
+#    container_name: pycqrs_postgres
+#    hostname: pycqrs_postgres
+#    image: postgres:latest
+#    restart: unless-stopped
+#    ports:
+#      - 5432:5432
+#    environment:
+#      POSTGRES_USER: app
+#      POSTGRES_PASSWORD: app
+#      POSTGRES_DB: pycqrs_reports_db
+#
+#  pgadmin:
+#    container_name: pycqrs_pgAdmin
+#    image: dpage/pgadmin4:latest
+#    restart: unless-stopped
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+#      PGADMIN_DEFAULT_PASSWORD: app
+#    ports:
+#      - "5050:80"
+#    volumes:
+#       - ./pgAdmin/pgAdmin:/var/lib/pgadmin
+#       - ./pgAdmin/pgAdmin_storage:/var/lib/pgadmin/storage/
+#    depends_on:
+#      - pgserver
+
+networks:
+  mynetwork:
+    driver: bridge
+volumes:
+  volume1:

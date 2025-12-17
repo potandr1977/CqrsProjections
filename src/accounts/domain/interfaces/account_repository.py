@@ -1,0 +1,16 @@
+from abc import abstractmethod, ABC
+
+from src.accounts.domain.models.account import Account
+
+
+class IAccountRepository(ABC):
+    # @abstractmethod
+    # async def get_by_id(self, account_id: str)->Account:...
+    # @abstractmethod
+    # async def get_all(self)->list[Account]:...
+    @abstractmethod
+    async def create(self, account: Account)->Account:...
+    @abstractmethod
+    async def update(self, account: Account)->None:...
+    # @abstractmethod
+    # async def delete(self, account_id: str)->None:...
