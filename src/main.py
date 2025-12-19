@@ -5,6 +5,9 @@ from fastapi import FastAPI
 
 from src.accounts.router import account_router
 from src.accounts.container import AccountContainer
+from src.persons.container import PersonContainer
+from src.persons.router import person_router
+
 
 async def ensure_database_exists(container:AccountContainer, db_name: str, collection_name: str):
     client = container.mongo_client()
@@ -23,12 +26,14 @@ async def init_databases(container: AccountContainer):
 
 def create_app() -> FastAPI:
     account_container = AccountContainer()
+    person_container = PersonContainer()
 
     application = FastAPI()
     application.account_container = account_container
+    application.person_container = person_container
 
     application.include_router(account_router)
-    #app.include_router(payment_router)
+    application.include_router(person_router)
     #app.include_router(reports_router)
 
     asyncio.run(init_databases(account_container))

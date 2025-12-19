@@ -1,12 +1,13 @@
 import uuid
 
+from src.accounts.domain.interfaces.account_repository import IAccountRepository
 from src.accounts.domain.models.account import Account
 from src.accounts.domain.models.person import Person
 from src.accounts.infrastructure.account_repository_impl import AccountRepository
 
 
 class AccountService:
-    def __init__(self, account_repository:AccountRepository):
+    def __init__(self, account_repository:IAccountRepository):
         self.account_repository = account_repository
 
     async def create(self, person_id: str, account_name: str):

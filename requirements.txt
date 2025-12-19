@@ -8,3 +8,4 @@ elasticsearch>=8.17.2
 dependency-injector>=4.46.0
 
 motor~=3.7.1
+aiokafka>=0.12.0

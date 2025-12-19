@@ -11,7 +11,7 @@ services:
 #      context: .
 #      dockerfile: Dockerfile
 
-  zookeeper-py:
+  zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     container_name: zookeeper
     environment:
@@ -20,11 +20,11 @@ services:
     ports:
       - "2181:2181"
 
-  kafka-py:
+  kafka:
     image: confluentinc/cp-kafka:7.5.0
-    container_name: kafka-py
+    container_name: kafka
     depends_on:
-      - zookeeper-py
+      - zookeeper
     ports:
       - "9092:9092"
     environment:
@@ -33,7 +33,7 @@ services:
       # слушаем на всех интерфейсах
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       # рекламируем себя как localhost:9092 (для приложений на хосте)
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-py:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
 
@@ -44,18 +44,7 @@ services:
       - "8181:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka-py:9092
-
-  py_kafdrop:
-    container_name: py_kafdrop
-    image: obsidiandynamics/kafdrop
-    restart: "no"
-    ports:
-      - "9001:9000"
-    environment:
-      KAFKA_BROKERCONNECT: "kafka-py:9092"
-    networks:
-      - mynetwork
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:9092
 
   elasticsearch:
     image: 'elasticsearch:8.12.0'
@@ -74,9 +63,7 @@ services:
       - 27047:27017
     restart: always
     environment:
-      - MONGO_INITDB_DATABASE=order_db
-    networks:
-      - mynetwork
+      - MONGO_INITDB_DATABASE=person_db
 
 #  pgserver:
 #    container_name: pycqrs_postgres
@@ -105,8 +92,3 @@ services:
 #    depends_on:
 #      - pgserver
 
-networks:
-  mynetwork:
-    driver: bridge
-volumes:
-  volume1:
