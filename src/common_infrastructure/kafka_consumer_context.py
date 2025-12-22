@@ -29,7 +29,7 @@ class KafkaConsumerContext:
 
 '''
 async def main():
-    async with KafkaConsumerContext("localhost:9092", "accounts", "account_service") as kafka: 
+    async with KafkaConsumerContext("localhost:9092", "accounts", "account_group") as kafka: 
         async for message in kafka.listen(): 
             print(f"Получено: {message}") 
             # можно добавить обработку, например запись в БД
