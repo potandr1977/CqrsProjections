@@ -13,11 +13,11 @@ class PersonRepository(IPersonRepository):
         doc = await self.collection.find_one({"id": person_id})
         if not doc:
             return None
-
-        person_doc = doc.get("person")
         person = Person(
-            id=str(person_doc["id"]),
-            name=person_doc["name"])
+            id=str(doc["id"]),
+            name=doc["name"],
+            inn=doc.get("inn")
+        )
         return person
 
     async def create(self, person: Person)->None:

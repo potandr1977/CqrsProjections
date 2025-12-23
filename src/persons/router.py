@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from src.accounts.container import AccountContainer
 from src.persons.container import PersonContainer
@@ -30,6 +30,8 @@ async def ping():
 async def get_by_id(person_id:str):
     person_service = person_container.person_service()
     person = await person_service.get_by_id(person_id)
+    if person is None:
+        raise HTTPException(status_code=404,detail="Person not found")
     return person
 
 @person_router.post(

@@ -15,23 +15,39 @@ import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
+import asyncio
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
 
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     # создаём контейнер
-#     container = Container()
-#     app.container = container
-#
-#     # создаём и запускаем Kafka worker
-#     worker = container.kafka_worker()
-#     task = asyncio.create_task(worker.run())
-#     print("Kafka worker started")
-#
-#     try:
-#         yield
-#     finally:
-#         task.cancel()
-#         print("Kafka worker stopped")
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+    account_container = AccountContainer()
+    person_container = PersonContainer()
+
+    application.account_container = account_container
+    application.person_container = person_container
+
+    await init_databases(application.account_container)
+
+    # создаём и запускаем несколько воркеров
+    workers = [
+        account_container.kafka_worker()
+    ]
+
+    tasks = [asyncio.create_task(worker.run()) for worker in workers]
+    print("Все воркеры запущены")
+
+    try:
+        yield
+    finally:
+        # мягкая остановка воркеров
+        for worker in workers:
+            if hasattr(worker, "stop") and callable(worker.stop):
+                await worker.stop()
+        # отмена задач (на случай если stop не реализован)
+        for task in tasks:
+            task.cancel()
+        print("Все воркеры остановлены")
 
 async def ensure_database_exists(container:AccountContainer, db_name: str, collection_name: str):
     client = container.mongo_client()
@@ -49,27 +65,12 @@ async def init_databases(container: AccountContainer):
     await ensure_database_exists(container, "payment_db", "payments")
 
 
-
 def create_app() -> FastAPI:
-    # application = FastAPI(lifespan=lifespan)
-
-    application = FastAPI()
-    account_container = AccountContainer()
-    person_container = PersonContainer()
-
-    application.account_container = account_container
-    application.person_container = person_container
+    application = FastAPI(lifespan=lifespan)
 
     application.include_router(account_router)
     application.include_router(person_router)
-    #app.include_router(reports_router)
-
-    asyncio.run(init_databases(account_container))
-
-    @application.on_event("startup")
-    async def start_kafka():
-        worker = application.account_container.kafka_worker()
-        asyncio.create_task(worker.run())
+    # app.include_router(reports_router)
 
     return application
 
