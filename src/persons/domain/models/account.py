@@ -5,4 +5,4 @@ from dataclasses import dataclass
 class Account:
     id:str
     name:str
-    saldo:decimal.Decimal
+    saldo:decimal.Decimal = 0

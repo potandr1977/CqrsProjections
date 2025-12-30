@@ -1,4 +1,3 @@
-from src.accounts.domain.account_service import AccountService
 from src.persons.domain.person_service import PersonService
 
 
