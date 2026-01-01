@@ -4,7 +4,6 @@ from typing import Dict, Any
 from src.persons.domain.models.account import Account
 from src.persons.domain.models.person import Person
 
-
 async def create_account(ctx: Dict, prev_result: Any):
     person:Person = prev_result
     if person is None:
@@ -17,7 +16,6 @@ async def create_account(ctx: Dict, prev_result: Any):
     person.accounts.append(account)
 
     return person
-
 
 async def compensate_create_account(ctx: Dict, prev_result: Dict):
     person:Person = ctx.get("person")

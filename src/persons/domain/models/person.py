@@ -12,3 +12,4 @@ class Person:
     inn:str
     accounts:List[Account] = field(default_factory=list)
     saldo:decimal.Decimal = 0
+

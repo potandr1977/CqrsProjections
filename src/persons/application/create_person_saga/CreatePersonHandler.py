@@ -14,7 +14,6 @@ async def create_person(ctx: Dict, prev_result: Any):
 
     return person
 
-
 async def compensate_create_person(ctx: Dict, prev_result: Dict):
     person:Person = ctx.get("person")
     if person is not None:

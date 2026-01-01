@@ -1,17 +1,19 @@
 from dataclasses import dataclass
 
 from src.persons.application.create_person_saga.CreateAccountHandler import create_account, compensate_create_account
-from src.persons.application.create_person_saga.CreatePaymentHandler import create_payment, compensate_create_payment
 from src.persons.application.create_person_saga.CreatePersonHandler import create_person, compensate_create_person
 from src.persons.application.saga_common.saga import Saga
 
+
 @dataclass
 class CreatePersonSaga(Saga):
-    def __init__(self, id:str, finished:bool = False):
-        super().__init__(id=id,finished=finished)
+
+    def __post_init__(self):
+        super().__init__(id=self.id, finished=self.finished)
+
         self.add_step(
-            action = create_person,
-            compensate = compensate_create_person,
+            action=create_person,
+            compensate=compensate_create_person,
             name="Create Person"
         )
 
