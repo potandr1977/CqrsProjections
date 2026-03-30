@@ -13,7 +13,6 @@ from src.common_infrastructure.kafka_consumer_context import KafkaConsumerContex
 pg_database='postgresql+asyncpg://app:app@localhost:5432/airbooking_db'
 
 
-
 class AccountContainer(containers.DeclarativeContainer):
     kafka_consumer_context = providers.Factory(KafkaConsumerContext, servers="localhost:9092", topic="persons", group_id="person_group")
     person_handler = providers.Factory(PersonHandler)
