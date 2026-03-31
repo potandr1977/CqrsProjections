@@ -25,6 +25,6 @@ class AccountContainer(containers.DeclarativeContainer):
     )
     # client и db_name - параметры конструктора AccountRepository
     account_repository:IAccountRepository = providers.Singleton(AccountRepository, client=mongo_client, db_name="account_db")
-    account_service:AccountService = providers.Factory(AccountService, account_repository = account_repository)
-    add_new_account_use_case = providers.Factory(AddNewAccountUseCase, account_service = account_service)
+    service:AccountService = providers.Factory(AccountService, account_repository = account_repository)
+    add_new_account_use_case = providers.Factory(AddNewAccountUseCase, account_service = service)
     wiring_config = containers.WiringConfiguration(modules=["src.accounts.router"])
