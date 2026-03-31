@@ -18,10 +18,18 @@ async def startup_event():
     await person_service.create_person(bob)
 '''
 
-@account_router.get("")
+@account_router.get("ping")
 async def ping():
     return "pong"
 
+@account_router.get(
+    "",
+    responses={400: {"description": "Bad request"}},
+    description="Получить счёт")
+async def get_by_id(account_id:str):
+    account_service = account_container.account_service()
+    account = await account_service.get_by_id(account_id)
+    return account
 
 @account_router.post(
     "",
@@ -31,4 +39,6 @@ async def add_new_account(person_id: str, account_name):
     use_case = account_container.add_new_account_use_case()
     account = await use_case.execute(person_id, account_name)
     return account
+
+
 
