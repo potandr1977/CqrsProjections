@@ -1,13 +1,13 @@
 import uuid
 
-from dependency_injector.wiring import inject
 from fastapi import APIRouter, HTTPException
 
-from src.persons.application.add_new_person import AddNewPersonUseCase
+from src.accounts.container import AccountContainer
 from src.persons.application.create_person_saga.CreatePersonSaga import CreatePersonSaga
-from src.persons.domain.person_service import PersonService
+from src.persons.container import PersonContainer
 
 person_router = APIRouter(prefix="/person", tags=["person"])
+person_container = PersonContainer()
 
 '''
 творим произвол с данными на потребу своей чёрной души.
@@ -22,7 +22,7 @@ async def startup_event():
     await person_service.create_person(bob)
 '''
 
-@person_router.get("/ping")
+@person_router.get("ping")
 async def ping():
     return "person-pong"
 
@@ -30,8 +30,8 @@ async def ping():
     "",
     responses={400: {"description": "Bad request"}},
     description="Получить персону")
-@inject
-async def get_by_id(person_id:str, person_service:PersonService):
+async def get_by_id(person_id:str):
+    person_service = person_container.person_service()
     person = await person_service.get_by_id(person_id)
     if person is None:
         raise HTTPException(status_code=404,detail="Person not found")
@@ -41,7 +41,8 @@ async def get_by_id(person_id:str, person_service:PersonService):
     "",
     responses={400: {"description": "Bad request"}},
     description="Создать персону")
-async def add_new_person(person_name:str, person_inn:str, use_case:AddNewPersonUseCase):
+async def add_new_person(person_name:str, person_inn:str):
+    use_case = person_container.add_new_person_use_case()
     person = await use_case.execute(person_name, person_inn)
     return person
 
@@ -49,9 +50,9 @@ async def add_new_person(person_name:str, person_inn:str, use_case:AddNewPersonU
     "saga",
     #responses={400: {"description": "Bad request"}},
     description="Создать персону")
-@inject
-async def create_person_saga(person_name:str, person_inn:str,person_service:PersonService):
+async def create_person_saga(person_name:str, person_inn:str):
     try:
+        person_service = person_container.person_service()
         ctx_step1 = {
             "person_service": person_service,
             "person_name": "Jim Saga",

@@ -22,7 +22,7 @@ class AccountRepository(IAccountRepository):
         person_doc = doc.get("person")
         person = Person(
             id=str(person_doc["id"]),
-            name=person_doc["name"]),
+            name=person_doc["name"])
         # Преобразуем список платежей
         payments = []
         for p in doc.get("payments", []):
