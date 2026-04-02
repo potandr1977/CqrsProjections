@@ -12,8 +12,6 @@ from src.common_infrastructure.kafka_consumer_context import KafkaConsumerContex
 
 pg_database='postgresql+asyncpg://app:app@localhost:5432/airbooking_db'
 
-
-
 class AccountContainer(containers.DeclarativeContainer):
     kafka_consumer_context = providers.Factory(KafkaConsumerContext, servers="localhost:9092", topic="persons", group_id="person_group")
     person_handler = providers.Factory(PersonHandler)
@@ -27,4 +25,3 @@ class AccountContainer(containers.DeclarativeContainer):
     account_repository:IAccountRepository = providers.Singleton(AccountRepository, client=mongo_client, db_name="account_db")
     service:AccountService = providers.Factory(AccountService, account_repository = account_repository)
     add_new_account_use_case = providers.Factory(AddNewAccountUseCase, account_service = service)
-    wiring_config = containers.WiringConfiguration(modules=["src.accounts.router"])

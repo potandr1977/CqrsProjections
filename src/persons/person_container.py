@@ -11,8 +11,6 @@ from src.persons.domain.person_service import PersonService
 from src.persons.infrastructure.person_bus_service_impl import PersonBusService
 from src.persons.infrastructure.person_repository_impl import PersonRepository
 
-pg_database='postgresql+asyncpg://app:app@localhost:5432/airbooking_db'
-
 class PersonContainer(containers.DeclarativeContainer):
     kafka_producer_context =  providers.Factory(KafkaProducerContext, bootstrap_servers="localhost:9092", topic = "persons")
     person_bus_service:IPersonBusService = providers.Factory(PersonBusService, kafka_producer_context = kafka_producer_context)

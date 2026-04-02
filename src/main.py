@@ -1,10 +1,10 @@
 import uvicorn
 
-from src.accounts.container import AccountContainer
-from src.persons.container import PersonContainer
+from src.accounts.account_container import AccountContainer
+from src.persons.person_container import PersonContainer
 
-from src.accounts.router import account_router
-from src.persons.router import person_router
+from src.accounts.account_router import account_router
+from src.persons.person_router import person_router
 
 import asyncio
 from contextlib import asynccontextmanager
@@ -67,10 +67,13 @@ async def init_databases(container: AccountContainer):
 
 def create_app() -> FastAPI:
     application = FastAPI(lifespan=lifespan)
-
+    application.account_container = AccountContainer()
+    application.account_container.wire(modules=["src.accounts.account_router"])
     application.include_router(account_router)
+
+    application.person_container = PersonContainer()
+    application.person_container.wire(modules=["src.persons.person_router"])
     application.include_router(person_router)
-    # app.include_router(reports_router)
 
     return application
 

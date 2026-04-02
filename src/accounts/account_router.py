@@ -1,9 +1,11 @@
-from fastapi import APIRouter
+from dependency_injector.wiring import inject, Provide
+from fastapi import APIRouter, Depends
 
-from src.accounts.container import AccountContainer
+from src.accounts.account_container import AccountContainer
+from src.accounts.application.add_new_account import AddNewAccountUseCase
+from src.accounts.domain.account_service import AccountService
 
 account_router = APIRouter(prefix="/account", tags=["account"])
-account_container = AccountContainer()
 
 '''
 творим произвол с данными на потребу своей чёрной души.
@@ -26,17 +28,21 @@ async def ping():
     "",
     responses={400: {"description": "Bad request"}},
     description="Получить счёт")
-async def get_by_id(account_id:str):
-    account_service = account_container.account_service()
-    account = await account_service.get_by_id(account_id)
-    return account
+@inject
+async def get_by_id(account_id:str, account_service: AccountService = Depends(Provide[AccountContainer.account_service])):
+    return await account_service.get_by_id(account_id)
+
 
 @account_router.post(
     "",
     responses={400: {"description": "Bad request"}},
     description="Создать счёт")
-async def add_new_account(person_id: str, account_name):
-    use_case = account_container.add_new_account_use_case()
+@inject
+async def add_new_account(
+        person_id: str,
+        account_name,
+        use_case:AddNewAccountUseCase = Depends(Provide[AccountContainer.add_new_account_use_case])
+):
     account = await use_case.execute(person_id, account_name)
     return account
 

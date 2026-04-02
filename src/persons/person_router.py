@@ -1,13 +1,14 @@
 import uuid
 
-from fastapi import APIRouter, HTTPException
+from dependency_injector.wiring import inject, Provide
+from fastapi import APIRouter, HTTPException, Depends
 
-from src.accounts.container import AccountContainer
+from src.persons.application.add_new_person import AddNewPersonUseCase
 from src.persons.application.create_person_saga.CreatePersonSaga import CreatePersonSaga
-from src.persons.container import PersonContainer
+from src.persons.domain.person_service import PersonService
+from src.persons.person_container import PersonContainer
 
 person_router = APIRouter(prefix="/person", tags=["person"])
-person_container = PersonContainer()
 
 '''
 творим произвол с данными на потребу своей чёрной души.
@@ -30,8 +31,11 @@ async def ping():
     "",
     responses={400: {"description": "Bad request"}},
     description="Получить персону")
-async def get_by_id(person_id:str):
-    person_service = person_container.person_service()
+@inject
+async def get_by_id(
+        person_id:str,
+        person_service: PersonService = Depends(Provide[PersonContainer.person_service])
+):
     person = await person_service.get_by_id(person_id)
     if person is None:
         raise HTTPException(status_code=404,detail="Person not found")
@@ -41,8 +45,11 @@ async def get_by_id(person_id:str):
     "",
     responses={400: {"description": "Bad request"}},
     description="Создать персону")
-async def add_new_person(person_name:str, person_inn:str):
-    use_case = person_container.add_new_person_use_case()
+async def add_new_person(
+        person_name:str,
+        person_inn:str,
+        use_case: AddNewPersonUseCase = Depends(Provide[PersonContainer.add_new_person_use_case])
+):
     person = await use_case.execute(person_name, person_inn)
     return person
 
@@ -50,16 +57,20 @@ async def add_new_person(person_name:str, person_inn:str):
     "saga",
     #responses={400: {"description": "Bad request"}},
     description="Создать персону")
-async def create_person_saga(person_name:str, person_inn:str):
+@inject
+async def create_person_saga(
+        person_name:str = "Jim Saga",
+        person_inn:str = "789",
+        person_service: PersonService = Depends(Provide[PersonContainer.person_service])
+):
     try:
-        person_service = person_container.person_service()
         ctx_step1 = {
             "person_service": person_service,
-            "person_name": "Jim Saga",
-            "person_inn": "789"
+            "person_name": person_name,
+            "person_inn": person_inn
         }
         saga_id = f"CreatePersonSaga-{str(uuid.uuid4())}"
-        saga = CreatePersonSaga(id=saga_id)
+        saga = CreatePersonSaga(id = saga_id)
         step1_result = await saga.execute_next_step(ctx_step1)
         person = step1_result.result
 
