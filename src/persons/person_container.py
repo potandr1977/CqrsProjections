@@ -20,4 +20,3 @@ class PersonContainer(containers.DeclarativeContainer):
     person_repository:IPersonRepository = providers.Singleton(PersonRepository, client = mongo_client, db_name = "person_db")
     person_service:PersonService = providers.Factory(PersonService, person_repository = person_repository, bus_service = person_bus_service)
     add_new_person_use_case = providers.Factory(AddNewPersonUseCase, person_service = person_service)
-    wiring_config = containers.WiringConfiguration(modules=["src.persons.router"])

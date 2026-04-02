@@ -70,7 +70,7 @@ async def create_person_saga(
             "person_inn": person_inn
         }
         saga_id = f"CreatePersonSaga-{str(uuid.uuid4())}"
-        saga = CreatePersonSaga(id = saga_id)
+        saga = CreatePersonSaga(id = saga_id, finished=False)
         step1_result = await saga.execute_next_step(ctx_step1)
         person = step1_result.result
 

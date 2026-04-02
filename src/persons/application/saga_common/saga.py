@@ -10,7 +10,7 @@ from src.persons.application.saga_common.saga_step import SagaStep
 @dataclass
 class Saga:
     id:str
-    finished:Boolean
+    finished:bool
     _steps: List[SagaStep] = field(default_factory=list)
 
     def add_step(
